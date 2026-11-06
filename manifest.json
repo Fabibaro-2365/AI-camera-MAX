@@ -1,0 +1,10 @@
+{
+  "name": "AI Camera MAX",
+  "short_name": "AI Camera",
+  "description": "Mejora tus fotografías",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e5e5e5"
+}
