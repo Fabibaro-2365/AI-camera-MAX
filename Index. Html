@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>AI Camera MAX 2.0</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f5f7;color:#20232a;font-family:Arial,sans-serif;text-align:center}
+header{background:#fff;padding:20px;border-bottom:1px solid #ddd}
+h1{margin:0;font-size:25px}
+header p{color:#64748b;margin-bottom:0}
+main{padding:18px;max-width:500px;margin:auto}
+.panel{background:white;padding:18px;border-radius:18px;margin:14px 0;box-shadow:0 3px 14px #0001}
+button,.filebtn{display:block;width:100%;padding:15px;margin:10px 0;border:0;border-radius:12px;background:#e8edf5;color:#172033;font-size:16px;font-weight:bold}
+.primary{background:#1677e8;color:white}
+.active{background:#dcecff;border:2px solid #1677e8}
+input{display:none}
+canvas{width:100%;border-radius:12px;margin-top:12px}
+small{color:#64748b}
+</style>
+</head>
+<body>
+<header>
+<h1>📸 AI Camera MAX 2.0</h1>
+<p>Captura. Mejora. Disfruta.</p>
+</header>
+<main>
+<div class="panel">
+<h3>✨ Elegí tu fotografía</h3>
+<label class="filebtn primary" for="camera">📷 Abrir cámara</label>
+<input id="camera" type="file" accept="image/*" capture="environment">
+<label class="filebtn" for="gallery">🖼️ Elegir de galería</label>
+<input id="gallery" type="file" accept="image/*">
+</div>
+<div class="panel">
+<h3>⚡ Modo de calidad</h3>
+<button id="max" class="active">💎 Calidad Máxima</button>
+<button id="fast">🚀 Calidad Bien Mejorada</button>
+<p id="mode">Modo seleccionado: Calidad Máxima</p>
+</div>
+<div class="panel">
+<h3>🌟 Resultado mejorado</h3>
+<canvas id="canvas"></canvas>
+<p id="status">Elegí una fotografía para comenzar.</p>
+<button class="primary" id="save">⬇️ Guardar fotografía</button>
+</div>
+<small>Gratis · Procesamiento local · Sin suscripciones</small>
+</main>
+<script>
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+let quality='max',ready=false;
+let photo=new Image();
+function choose(file){
+ if(!file)return;
+ const url=URL.createObjectURL(file);
+ photo.onload=()=>{
+  const scale=Math.min(1,1600/Math.max(photo.width,photo.height));
+  canvas.width=Math.round(photo.width*scale);
+  canvas.height=Math.round(photo.height*scale);
+  ctx.filter=quality==='max'
+   ?'contrast(1.13) saturate(1.16) brightness(1.03)'
+   :'contrast(1.07) saturate(1.08) brightness(1.02)';
+  ctx.drawImage(photo,0,0,canvas.width,canvas.height);
+  ctx.filter='none';
+  ready=true;
+  document.getElementById('status').textContent='¡Fotografía mejorada!';
+  URL.revokeObjectURL(url);
+ };
+ photo.src=url;
+}
+document.getElementById('camera').onchange=e=>choose(e.target.files[0]);
+document.getElementById('gallery').onchange=e=>choose(e.target.files[0]);
+document.getElementById('max').onclick=()=>{
+ quality='max';
+ document.getElementById('max').className='active';
+ document.getElementById('fast').className='';
+ document.getElementById('mode').textContent='Modo seleccionado: Calidad Máxima';
+ if(ready)chooseAgain();
+};
+document.getElementById('fast').onclick=()=>{
+ quality='fast';
+ document.getElementById('fast').className='active';
+ document.getElementById('max').className='';
+ document.getElementById('mode').textContent='Modo seleccionado: Calidad Bien Mejorada';
+ if(ready)chooseAgain();
+};
+function chooseAgain(){
+ ctx.filter=quality==='max'?'contrast(1.13) saturate(1.16) brightness(1.03)':'contrast(1.07) saturate(1.08) brightness(1.02)';
+ ctx.drawImage(photo,0,0,canvas.width,canvas.height);
+ ctx.filter='none';
+}
+document.getElementById('save').onclick=()=>{
+ if(!ready){alert('Primero elegí una fotografía.');return;}
+ const a=document.createElement('a');
+ a.download='AI-Camera-MAX.jpg';
+ a.href=canvas.toDataURL('image/jpeg',0.94);
+ a.click();
+};
+</script>
+</body>
+</html>
